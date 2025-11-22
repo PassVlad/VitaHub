@@ -1,10 +1,15 @@
 package com.example.glumedic
+
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textfield.TextInputEditText
 import java.text.SimpleDateFormat
@@ -20,6 +25,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnSave: com.google.android.material.button.MaterialButton
     private lateinit var btnShowHistory: com.google.android.material.button.MaterialButton
     private lateinit var tvStats: TextView
+    private lateinit var toolbar: MaterialToolbar
+    private lateinit var tvMeasurementsCount: TextView
 
     private var selectedDateTime: String = ""
     private val measurements = mutableListOf<GlucoseMeasurement>()
@@ -32,21 +39,12 @@ class MainActivity : AppCompatActivity() {
         prefsHelper = SharedPreferencesHelper(this)
 
         initViews()
+        setupToolbar()
         setupClickListeners()
         selectedDateTime = getCurrentDateTime()
         updateDateTimeButton()
 
         loadSavedMeasurements()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        saveMeasurementsToPrefs()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        saveMeasurementsToPrefs()
     }
 
     private fun initViews() {
@@ -58,6 +56,78 @@ class MainActivity : AppCompatActivity() {
         btnSave = findViewById(R.id.btnSave)
         btnShowHistory = findViewById(R.id.btnShowHistory)
         tvStats = findViewById(R.id.tvStats)
+        toolbar = findViewById(R.id.toolbar)
+        tvMeasurementsCount = findViewById(R.id.tvMeasurementsCount)
+    }
+
+    private fun setupToolbar() {
+        setSupportActionBar(toolbar)
+
+        // Обработчик клика по иконке навигации
+        toolbar.setNavigationOnClickListener {
+            showToast("Глюкоза Трекер")
+        }
+    }
+
+    // Создание меню в Toolbar
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+        return true
+    }
+
+    // Обработка кликов по пунктам меню
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_camera -> {
+                openCameraActivity()
+                true
+            }
+            R.id.action_history -> {
+                showHistory()
+                true
+            }
+            R.id.action_documents -> {
+                openGalleryActivity()
+                true
+            }
+            R.id.action_settings -> {
+                showToast("Настройки скоро будут доступны")
+                true
+            }
+            R.id.action_about -> {
+                showAboutDialog()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun openGalleryActivity() {
+        val intent = Intent(this, GalleryActivity::class.java)
+        startActivity(intent)
+    }
+
+    // Добавьте метод для открытия активности камеры
+    private fun openCameraActivity() {
+        val intent = Intent(this, CameraActivity::class.java)
+        startActivity(intent)
+    }
+
+    private fun showAboutDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("О приложении")
+            .setMessage("Глюкоза Трекер\nВерсия 1.0\n\nПриложение для отслеживания уровня глюкозы в крови.")
+            .setPositiveButton("OK", null)
+            .show()
+    }
+
+    private fun updateMeasurementsCounter() {
+        if (measurements.isNotEmpty()) {
+            tvMeasurementsCount.text = measurements.size.toString()
+            tvMeasurementsCount.visibility = TextView.VISIBLE
+        } else {
+            tvMeasurementsCount.visibility = TextView.GONE
+        }
     }
 
     private fun setupClickListeners() {
@@ -71,6 +141,7 @@ class MainActivity : AppCompatActivity() {
         measurements.clear()
         measurements.addAll(savedMeasurements)
         updateStatistics()
+        updateMeasurementsCounter() // Обновляем счетчик
 
         if (measurements.isNotEmpty()) {
             showToast("Загружено ${measurements.size} сохраненных измерений")
@@ -135,6 +206,7 @@ class MainActivity : AppCompatActivity() {
             measurements.add(measurement)
             saveMeasurementsToPrefs()
             updateStatistics()
+            updateMeasurementsCounter() // Обновляем счетчик
             clearForm()
             showToast("✓ Измерение сохранено")
 
@@ -174,8 +246,8 @@ class MainActivity : AppCompatActivity() {
             .joinToString("\n\n") { measurement ->
                 "🕒 ${measurement.dateTime}\n" +
                         "🩸 ${measurement.glucoseLevel} ммоль/л\n" +
-                        "🍽 ${measurement.mealTime}\n" +
-                        if (measurement.notes.isNotEmpty()) "📝 ${measurement.notes}" else ""
+                        "🍽 Прием пищи: ${measurement.mealTime}\n" +
+                        if (measurement.notes.isNotEmpty()) "📝 Заметки: ${measurement.notes}" else ""
             }
 
         AlertDialog.Builder(this)
@@ -209,5 +281,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        saveMeasurementsToPrefs()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        saveMeasurementsToPrefs()
     }
 }

@@ -13,6 +13,51 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <!-- Кастомный Toolbar -->
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            style="@style/ToolbarStyle"
+            app:title="Глюкоза Трекер"
+            app:menu="@menu/main_menu"
+            app:titleTextColor="@color/white"
+            app:navigationIcon="@drawable/ic_medical"
+            android:layout_marginBottom="24dp">
+
+            <!-- Дополнительные элементы в Toolbar -->
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:paddingEnd="16dp">
+
+                <ImageView
+                    android:id="@+id/ivStats"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:contentDescription="Статистика"
+                    android:src="@drawable/ic_chart"
+                    app:tint="@color/white" />
+
+                <TextView
+                    android:id="@+id/tvMeasurementsCount"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_alignTop="@id/ivStats"
+                    android:layout_alignEnd="@id/ivStats"
+                    android:background="@drawable/badge_background"
+                    android:gravity="center"
+                    android:text="0"
+                    android:textColor="@color/white"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+
+            </RelativeLayout>
+
+        </com.google.android.material.appbar.MaterialToolbar>
+
         <!-- Заголовок с иконкой -->
         <LinearLayout
             android:layout_width="match_parent"
