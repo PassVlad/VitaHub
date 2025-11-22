@@ -1,11 +1,11 @@
 package com.example.glumedic
-
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
+import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textfield.TextInputEditText
 import java.text.SimpleDateFormat
 import java.util.*
@@ -15,9 +15,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var etGlucose: TextInputEditText
     private lateinit var etMeal: TextInputEditText
     private lateinit var etNotes: TextInputEditText
-    private lateinit var btnDateTime: Button
-    private lateinit var btnSave: Button
-    private lateinit var btnShowHistory: Button
+    private lateinit var btnDateTime: MaterialCardView
+    private lateinit var tvDateTime: TextView
+    private lateinit var btnSave: com.google.android.material.button.MaterialButton
+    private lateinit var btnShowHistory: com.google.android.material.button.MaterialButton
     private lateinit var tvStats: TextView
 
     private var selectedDateTime: String = ""
@@ -35,19 +36,16 @@ class MainActivity : AppCompatActivity() {
         selectedDateTime = getCurrentDateTime()
         updateDateTimeButton()
 
-        // Загружаем сохраненные данные при запуске
         loadSavedMeasurements()
     }
 
     override fun onPause() {
         super.onPause()
-        // Сохраняем данные когда приложение уходит в фон
         saveMeasurementsToPrefs()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        // Сохраняем данные при закрытии приложения
         saveMeasurementsToPrefs()
     }
 
@@ -56,6 +54,7 @@ class MainActivity : AppCompatActivity() {
         etMeal = findViewById(R.id.etMeal)
         etNotes = findViewById(R.id.etNotes)
         btnDateTime = findViewById(R.id.btnDateTime)
+        tvDateTime = findViewById(R.id.tvDateTime)
         btnSave = findViewById(R.id.btnSave)
         btnShowHistory = findViewById(R.id.btnShowHistory)
         tvStats = findViewById(R.id.tvStats)
@@ -134,10 +133,10 @@ class MainActivity : AppCompatActivity() {
             )
 
             measurements.add(measurement)
-            saveMeasurementsToPrefs() // Сохраняем сразу после добавления
+            saveMeasurementsToPrefs()
             updateStatistics()
             clearForm()
-            showToast("Измерение сохранено")
+            showToast("✓ Измерение сохранено")
 
         } catch (e: NumberFormatException) {
             showToast("Некорректное значение глюкозы")
@@ -146,7 +145,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateStatistics() {
         if (measurements.isEmpty()) {
-            tvStats.text = "Данных пока нет"
+            tvStats.text = "Данных пока нет\nДобавьте первое измерение"
             return
         }
 
@@ -156,10 +155,10 @@ class MainActivity : AppCompatActivity() {
         val max = glucoseLevels.maxOrNull() ?: 0.0
 
         val stats = """
-            Всего измерений: ${measurements.size}
-            Средний уровень: ${"%.1f".format(average)}
-            Мин: ${"%.1f".format(min)}
-            Макс: ${"%.1f".format(max)}
+            📊 Всего измерений: ${measurements.size}
+            📈 Средний уровень: ${"%.1f".format(average)} ммоль/л
+            📉 Минимальный: ${"%.1f".format(min)} ммоль/л
+            📈 Максимальный: ${"%.1f".format(max)} ммоль/л
         """.trimIndent()
 
         tvStats.text = stats
@@ -173,13 +172,14 @@ class MainActivity : AppCompatActivity() {
 
         val history = measurements.sortedByDescending { it.dateTime }
             .joinToString("\n\n") { measurement ->
-                "${measurement.dateTime}: ${measurement.glucoseLevel} ммоль/л\n" +
-                        "Прием пищи: ${measurement.mealTime}\n" +
-                        if (measurement.notes.isNotEmpty()) "Заметки: ${measurement.notes}" else ""
+                "🕒 ${measurement.dateTime}\n" +
+                        "🩸 ${measurement.glucoseLevel} ммоль/л\n" +
+                        "🍽 ${measurement.mealTime}\n" +
+                        if (measurement.notes.isNotEmpty()) "📝 ${measurement.notes}" else ""
             }
 
         AlertDialog.Builder(this)
-            .setTitle("История измерений (${measurements.size})")
+            .setTitle("📋 История измерений (${measurements.size})")
             .setMessage(history)
             .setPositiveButton("OK", null)
             .show()
@@ -203,7 +203,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateDateTimeButton() {
-        btnDateTime.text = selectedDateTime
+        tvDateTime.text = selectedDateTime
+        tvDateTime.setTextColor(resources.getColor(R.color.text_primary))
     }
 
     private fun showToast(message: String) {

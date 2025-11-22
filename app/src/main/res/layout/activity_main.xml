@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/gradient_background"
     android:padding="16dp"
     tools:context=".MainActivity">
 
@@ -12,112 +13,252 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Заголовок -->
-        <TextView
+        <!-- Заголовок с иконкой -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Трекер глюкозы"
-            android:textSize="24sp"
-            android:textStyle="bold"
             android:gravity="center"
-            android:layout_marginBottom="24dp" />
+            android:orientation="horizontal"
+            android:layout_marginBottom="32dp"
+            android:layout_marginTop="16dp">
 
-        <!-- Ввод уровня глюкозы -->
-        <com.google.android.material.textfield.TextInputLayout
+            <ImageView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_glucose"
+                android:layout_marginEnd="12dp"
+                app:tint="@color/white" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Глюкоза Трекер"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:fontFamily="sans-serif-light" />
+
+        </LinearLayout>
+
+        <!-- Карточка для ввода данных -->
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:boxCornerRadiusBottomEnd="8dp"
-            app:boxCornerRadiusBottomStart="8dp"
-            app:boxCornerRadiusTopEnd="8dp"
-            app:boxCornerRadiusTopStart="8dp">
+            app:cardCornerRadius="20dp"
+            app:cardElevation="8dp"
+            android:layout_marginBottom="24dp"
+            app:cardBackgroundColor="@color/white">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etGlucose"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Уровень глюкозы (ммоль/л)"
-                android:inputType="numberDecimal" />
+                android:orientation="vertical"
+                android:padding="24dp">
 
-        </com.google.android.material.textfield.TextInputLayout>
+                <!-- Уровень глюкозы -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Уровень глюкозы"
+                    android:textSize="16sp"
+                    android:textColor="@color/primary_color"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp" />
 
-        <!-- Ввод даты и времени -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Дата и время измерения:"
-            android:layout_marginBottom="8dp" />
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/ModernTextInputLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    app:startIconDrawable="@drawable/ic_blood_drop"
+                    app:startIconTint="@color/primary_color">
 
-        <Button
-            android:id="@+id/btnDateTime"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:text="Выбрать дату и время" />
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etGlucose"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="ммоль/л"
+                        android:textSize="18sp"
+                        android:inputType="numberDecimal"
+                        android:textColor="@color/text_primary" />
 
-        <!-- Прием пищи -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp">
+                </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etMeal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Прием пищи (например: до еды, после еды)" />
+                <!-- Дата и время -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Дата и время измерения"
+                    android:textSize="16sp"
+                    android:textColor="@color/primary_color"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp" />
 
-        </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/btnDateTime"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="2dp"
+                    android:layout_marginBottom="20dp"
+                    android:background="?selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true">
 
-        <!-- Заметки -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:padding="16dp"
+                        android:gravity="center_vertical">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etNotes"
-                android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:gravity="top"
-                android:hint="Заметки"
-                android:inputType="textMultiLine" />
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_calendar"
+                            android:layout_marginEnd="12dp"
+                            app:tint="@color/primary_color" />
 
-        </com.google.android.material.textfield.TextInputLayout>
+                        <TextView
+                            android:id="@+id/tvDateTime"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Выбрать дату и время"
+                            android:textSize="16sp"
+                            android:textColor="@color/text_primary" />
 
-        <!-- Кнопки -->
-        <Button
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/ic_arrow_down"
+                            app:tint="@color/text_secondary" />
+
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Прием пищи -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Прием пищи"
+                    android:textSize="16sp"
+                    android:textColor="@color/primary_color"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/ModernTextInputLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    app:startIconDrawable="@drawable/ic_meal"
+                    app:startIconTint="@color/primary_color">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etMeal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="До еды, после еды, натощак..."
+                        android:textSize="16sp"
+                        android:textColor="@color/text_primary" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Заметки -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Заметки"
+                    android:textSize="16sp"
+                    android:textColor="@color/primary_color"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/ModernTextInputLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    app:startIconDrawable="@drawable/ic_notes"
+                    app:startIconTint="@color/primary_color">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etNotes"
+                        android:layout_width="match_parent"
+                        android:layout_height="100dp"
+                        android:gravity="top"
+                        android:hint="Дополнительные заметки..."
+                        android:inputType="textMultiLine"
+                        android:textSize="16sp"
+                        android:textColor="@color/text_primary" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Кнопка сохранения -->
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSave"
+            style="@style/ModernButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Сохранить измерение"
-            android:textColor="@android:color/white"
-            android:backgroundTint="@color/design_default_color_primary"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="16dp"
+            app:icon="@drawable/ic_save"
+            app:iconTint="@color/white" />
 
-        <Button
+        <!-- Кнопка истории -->
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnShowHistory"
+            style="@style/ModernButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="История измерений"
-            android:layout_marginBottom="24dp" />
+            android:layout_marginBottom="32dp"
+            app:icon="@drawable/ic_history"
+            app:iconTint="@color/white" />
 
-        <!-- Статистика -->
-        <TextView
-            android:id="@+id/tvStatistics"
+        <!-- Карточка статистики -->
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Статистика:"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="8dp" />
+            app:cardCornerRadius="20dp"
+            app:cardElevation="6dp"
+            app:cardBackgroundColor="@color/white">
 
-        <TextView
-            android:id="@+id/tvStats"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Данных пока нет"
-            android:layout_marginBottom="24dp" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="24dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Статистика"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/primary_color"
+                    android:gravity="center"
+                    android:layout_marginBottom="16dp" />
+
+                <TextView
+                    android:id="@+id/tvStats"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Данных пока нет"
+                    android:textSize="16sp"
+                    android:textColor="@color/text_secondary"
+                    android:gravity="center"
+                    android:lineSpacingExtra="4dp" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
 
     </LinearLayout>
 
