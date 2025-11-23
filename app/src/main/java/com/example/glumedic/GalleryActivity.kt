@@ -9,6 +9,9 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.*
+import androidx.appcompat.app.AlertDialog
 
 class GalleryActivity : AppCompatActivity() {
 
@@ -30,11 +33,13 @@ class GalleryActivity : AppCompatActivity() {
         toolbar = findViewById(R.id.toolbar)
         recyclerView = findViewById(R.id.recyclerView)
         tvEmpty = findViewById(R.id.tvEmpty)
-        
-        // Настройка RecyclerView
+
         recyclerView.layoutManager = GridLayoutManager(this, 2)
-        adapter = GalleryAdapter(emptyList()) { imageFile ->
-            openImageDetail(imageFile)
+        adapter = GalleryAdapter(emptyList()) { imageFile, action ->
+            when (action) {
+                GalleryAdapter.ACTION_VIEW -> openImageDetail(imageFile)
+                GalleryAdapter.ACTION_RENAME -> renameImage(imageFile)
+            }
         }
         recyclerView.adapter = adapter
     }
@@ -75,48 +80,80 @@ class GalleryActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    override fun onResume() {
-        super.onResume()
-        loadImages() // Обновляем список при возвращении на экран
+    private fun renameImage(imageFile: File) {
+        val input = EditText(this)
+        val currentName = getDisplayName(imageFile.name)
+        input.setText(currentName)
+        input.hint = "Введите название документа"
+
+        AlertDialog.Builder(this)
+            .setTitle("Переименовать документ")
+            .setMessage("Можно использовать любые языки и символы (кроме / \\ : * ? \" < > |)")
+            .setView(input)
+            .setPositiveButton("Сохранить") { dialog, _ ->
+                val newName = input.text.toString().trim()
+                if (newName.isNotEmpty()) {
+                    performRename(imageFile, newName)
+                } else {
+                    Toast.makeText(this, "Название не может быть пустым", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .setNegativeButton("Отмена", null)
+            .show()
     }
-}
 
-// Адаптер для галереи
-class GalleryAdapter(
-    private var imageFiles: List<File>,
-    private val onItemClick: (File) -> Unit
-) : RecyclerView.Adapter<GalleryAdapter.ViewHolder>() {
+    private fun performRename(oldFile: File, newName: String) {
+        try {
+            // Очищаем имя файла от недопустимых символов
+            val cleanName = cleanFileName(newName)
+            if (cleanName.isEmpty()) {
+                Toast.makeText(this, "Название содержит недопустимые символы", Toast.LENGTH_SHORT).show()
+                return
+            }
 
-    class ViewHolder(itemView: android.view.View) : RecyclerView.ViewHolder(itemView) {
-        val imageView: ImageView = itemView.findViewById(R.id.ivThumbnail)
-        val fileName: TextView = itemView.findViewById(R.id.tvFileName)
-    }
+            val extension = oldFile.extension
+            val newFileName = if (cleanName.contains(".")) cleanName else "$cleanName.$extension"
+            val newFile = File(oldFile.parent, newFileName)
 
-    override fun onCreateViewHolder(parent: android.view.ViewGroup, viewType: Int): ViewHolder {
-        val view = android.view.LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_gallery, parent, false)
-        return ViewHolder(view)
-    }
+            if (newFile.exists()) {
+                Toast.makeText(this, "Файл с таким именем уже существует", Toast.LENGTH_SHORT).show()
+                return
+            }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val imageFile = imageFiles[position]
-        
-        // Загрузка изображения
-        val bitmap = BitmapFactory.decodeFile(imageFile.absolutePath)
-        holder.imageView.setImageBitmap(bitmap)
-        
-        // Отображение имени файла
-        holder.fileName.text = "Документ ${position + 1}"
-        
-        holder.itemView.setOnClickListener {
-            onItemClick(imageFile)
+            if (oldFile.renameTo(newFile)) {
+                Toast.makeText(this, "✓ Документ переименован", Toast.LENGTH_SHORT).show()
+                loadImages()
+            } else {
+                Toast.makeText(this, "Ошибка переименования", Toast.LENGTH_SHORT).show()
+            }
+        } catch (e: Exception) {
+            Toast.makeText(this, "Ошибка: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
 
-    override fun getItemCount(): Int = imageFiles.size
+    private fun cleanFileName(fileName: String): String {
+        // Удаляем недопустимые для файловой системы символы
+        val invalidChars = charArrayOf('/', '\\', ':', '*', '?', '"', '<', '>', '|')
+        var cleaned = fileName
 
-    fun updateImages(newImages: List<File>) {
-        imageFiles = newImages
-        notifyDataSetChanged()
+        // Заменяем недопустимые символы на подчеркивания
+        invalidChars.forEach { char ->
+            cleaned = cleaned.replace(char, '_')
+        }
+
+        // Удаляем начальные и конечные пробелы, точки
+        cleaned = cleaned.trim().trimEnd('.')
+
+        // Проверяем, что имя не пустое
+        return if (cleaned.isNotEmpty()) cleaned else ""
+    }
+
+    private fun getDisplayName(fileName: String): String {
+        return fileName.substringBeforeLast(".").removePrefix("document_")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        loadImages()
     }
 }
