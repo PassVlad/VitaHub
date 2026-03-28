@@ -1,14 +1,13 @@
 <resources>
-    <string name="app_name">GluMedic</string>
+    <string name="app_name">VitaHub</string>
     <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">First Fragment</string>
-    <string name="second_fragment_label">Second Fragment</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
-    <string name="title">ВитаХаб</string>
+    <string name="title">VitaHub</string>
     <string name="selectAct">Активности</string>
     <string name="btnGlu">Глюкоза</string>
     <string name="btnPress">Давление</string>
+    <string name="btnNext">Следующее</string>
     <string name="photo_menu">Сфотографировать документ</string>
     <string name="history_menu">История измерений</string>
     <string name="docx_menu">Мои документы</string>

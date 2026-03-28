@@ -39,10 +39,16 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity><!-- Главная активность -->
+        </activity>
+
+        <activity
+            android:name=".Glucose"
+            android:exported="false"/>
+
         <activity
             android:name=".CameraActivity"
-            android:exported="false" /> <!-- FileProvider для камеры -->
+            android:exported="false" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
@@ -61,9 +67,6 @@
             android:exported="false" />
         <activity
             android:name=".DocumentDigitizerActivity"
-            android:exported="false" />
-        <activity
-            android:name=".MainAct"
             android:exported="false" />
     </application>
 

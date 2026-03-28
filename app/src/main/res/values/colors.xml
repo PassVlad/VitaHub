@@ -20,6 +20,8 @@
     <color name="text_secondary">#6B7280</color>
     <color name="background_light">#F8FAFC</color>
 
+    <color name="hint">#474747</color>
+
     <color name="success_green">#10B981</color>
     <color name="warning_orange">#F59E0B</color>
     <color name="error_red">#EF4444</color>
