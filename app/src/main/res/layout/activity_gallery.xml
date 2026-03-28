@@ -4,13 +4,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/background_light">
+    android:background="@drawable/gradient_background">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/primary_color"
+        android:background="@android:color/transparent"
+        style="@style/ActionBar"
         app:titleTextColor="@color/white"
         app:navigationIcon="@drawable/ic_arrow_back"
         app:navigationIconTint="@color/white" />
@@ -32,7 +33,7 @@
             android:layout_height="match_parent"
             android:text="📷\nНет сохраненных документов\n\nСфотографируйте первый документ в разделе 'Камера'"
             android:textSize="18sp"
-            android:textColor="@color/text_secondary"
+            android:textColor="@color/white"
             android:gravity="center"
             android:padding="32dp" />
 

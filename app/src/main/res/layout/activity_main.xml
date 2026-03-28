@@ -13,16 +13,15 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Кастомный Toolbar -->
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            style="@style/ToolbarStyle"
-            app:title="Глюкоза Трекер"
+            style="@style/ActionBar"
+            app:title="VitaHub"
             app:menu="@menu/main_menu"
-            app:titleTextColor="@color/white"
             app:navigationIcon="@drawable/ic_medical"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
             android:layout_marginBottom="24dp">
 
             <!-- Дополнительные элементы в Toolbar -->
@@ -55,7 +54,6 @@
                     android:visibility="gone" />
 
             </RelativeLayout>
-
         </com.google.android.material.appbar.MaterialToolbar>
 
         <!-- Заголовок с иконкой -->
@@ -104,17 +102,18 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
                     android:text="Уровень глюкозы"
-                    android:textSize="16sp"
                     android:textColor="@color/primary_color"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="8dp" />
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/ModernTextInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="20dp"
+                    app:boxStrokeColor="@color/gray_light"
                     app:startIconDrawable="@drawable/ic_blood_drop"
                     app:startIconTint="@color/primary_color">
 
@@ -123,9 +122,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="ммоль/л"
-                        android:textSize="18sp"
                         android:inputType="numberDecimal"
-                        android:textColor="@color/text_primary" />
+                        android:textColor="@color/text_primary"
+                        android:textSize="18sp" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -133,35 +132,36 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
                     android:text="Дата и время измерения"
-                    android:textSize="16sp"
                     android:textColor="@color/primary_color"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="8dp" />
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/btnDateTime"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="2dp"
                     android:layout_marginBottom="20dp"
-                    android:background="?selectableItemBackground"
+                    app:cardBackgroundColor="@color/white"
                     android:clickable="true"
-                    android:focusable="true">
+                    app:strokeColor="@color/gray_light"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="2dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
                         android:orientation="horizontal"
                         android:padding="16dp"
-                        android:gravity="center_vertical">
+                        android:background="@android:color/transparent">
 
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
-                            android:src="@drawable/ic_calendar"
                             android:layout_marginEnd="12dp"
+                            android:src="@drawable/ic_calendar"
                             app:tint="@color/primary_color" />
 
                         <TextView
@@ -170,8 +170,8 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:text="Выбрать дату и время"
-                            android:textSize="16sp"
-                            android:textColor="@color/text_primary" />
+                            android:textColor="@color/text_primary"
+                            android:textSize="16sp" />
 
                         <ImageView
                             android:layout_width="16dp"
@@ -187,17 +187,18 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
                     android:text="Прием пищи"
-                    android:textSize="16sp"
                     android:textColor="@color/primary_color"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="8dp" />
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/ModernTextInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="20dp"
+                    app:boxStrokeColor="@color/gray_light"
                     app:startIconDrawable="@drawable/ic_meal"
                     app:startIconTint="@color/primary_color">
 
@@ -206,8 +207,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="До еды, после еды, натощак..."
-                        android:textSize="16sp"
-                        android:textColor="@color/text_primary" />
+                        android:textColor="@color/text_primary"
+                        android:textSize="16sp" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -215,11 +216,11 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
                     android:text="Заметки"
-                    android:textSize="16sp"
                     android:textColor="@color/primary_color"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="8dp" />
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/ModernTextInputLayout"
@@ -236,8 +237,8 @@
                         android:gravity="top"
                         android:hint="Дополнительные заметки..."
                         android:inputType="textMultiLine"
-                        android:textSize="16sp"
-                        android:textColor="@color/text_primary" />
+                        android:textColor="@color/text_primary"
+                        android:textSize="16sp" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -266,6 +267,15 @@
             android:layout_marginBottom="32dp"
             app:icon="@drawable/ic_history"
             app:iconTint="@color/white" />
+
+        <!-- <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnFrag"
+            style="@style/ModernButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Fragments"
+            android:layout_marginBottom="32dp"
+            app:iconTint="@color/white" /> -->
 
         <!-- Карточка статистики -->
         <com.google.android.material.card.MaterialCardView

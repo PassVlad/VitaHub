@@ -1,18 +1,19 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Тема без стандартного ActionBar -->
     <style name="Theme.GlucoseTracker" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="colorPrimary">@color/primary_color</item>
         <item name="colorPrimaryDark">@color/primary_dark</item>
         <item name="colorAccent">@color/secondary_color</item>
-        <item name="android:statusBarColor">@color/primary_dark</item>
+        <item name="colorOnSurface">@color/white</item>
+        <item name="colorOnSurfaceVariant">@color/white</item>
     </style>
 
-    <!-- Стиль для Toolbar -->
-    <style name="ToolbarStyle" parent="Widget.MaterialComponents.Toolbar">
-        <item name="android:background">@color/primary_color</item>
+    <style name="ActionBar" parent="Widget.MaterialComponents.Toolbar.Primary">
+        <item name="android:textColorPrimary">@color/white</item>
         <item name="titleTextColor">@color/white</item>
-        <item name="android:minHeight">?attr/actionBarSize</item>
-        <item name="android:elevation">4dp</item>
+        <item name="android:textColorSecondary">@color/white</item>
+        <item name="navigationIconTint">@color/white</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="background">@android:color/transparent</item>
     </style>
 
     <!-- Остальные стили -->
@@ -26,22 +27,54 @@
     </style>
 
     <style name="ModernButton" parent="Widget.MaterialComponents.Button">
-        <item name="backgroundTint">@color/primary_color</item>
+        <item name="backgroundTint">@color/purple_500</item>
         <item name="cornerRadius">16dp</item>
         <item name="android:elevation">4dp</item>
         <item name="android:minHeight">56dp</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:textSize">16sp</item>
         <item name="android:textStyle">bold</item>
+        <item name="strokeColor">@color/primary_color</item>
+        <item name="strokeWidth">2dp</item>
+    </style>
+
+    <style name="GridLayout">
+        <item name="backgroundTint">@color/background_light</item>
+        <item name="android:elevation">4dp</item>
     </style>
 
     <style name="OutlineButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
         <item name="strokeColor">@color/primary_color</item>
+        <item name="backgroundTint">@color/white</item>
         <item name="strokeWidth">2dp</item>
         <item name="cornerRadius">16dp</item>
         <item name="android:minHeight">56dp</item>
         <item name="android:textColor">@color/primary_color</item>
         <item name="android:textSize">16sp</item>
         <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- Стиль для светлого DatePicker -->
+    <style name="DatePickerDialogTheme" parent="ThemeOverlay.Material3.MaterialCalendar">
+        <item name="colorPrimary">@color/primary_color</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSurface">@color/white</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="android:windowBackground">@color/white</item>
+    </style>
+
+    <!-- Стиль для светлого TimePicker -->
+    <style name="TimePickerDialogTheme" parent="ThemeOverlay.Material3.Dialog">
+        <item name="colorPrimary">@color/primary_color</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSurface">@color/white</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="android:windowBackground">@color/white</item>
+    </style>
+
+    <!-- Base application theme. -->
+    <style name="Base.Theme.GlucoseTracker" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>
 </resources>

@@ -4,14 +4,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/background_light">
+    android:background="@drawable/gradient_background">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/primary_color"
-        app:titleTextColor="@color/white"
+        android:background="@android:color/transparent"
+        style="@style/ActionBar"
+        app:title="Фото документов"
         app:navigationIcon="@drawable/ic_arrow_back"
         app:navigationIconTint="@color/white" />
 
@@ -33,7 +34,7 @@
                 android:text="Фотографирование документов"
                 android:textSize="24sp"
                 android:textStyle="bold"
-                android:textColor="@color/primary_color"
+                android:textColor="@color/white"
                 android:gravity="center"
                 android:layout_marginBottom="32dp" />
 
@@ -46,12 +47,13 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnTakePhoto"
-                    style="@style/ModernButton"
+                    style="@style/OutlineButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Сфотографировать"
+                    android:text="Фото"
                     app:icon="@drawable/ic_camera"
+                    app:iconTint="@color/purple_500"
                     android:layout_marginEnd="8dp" />
 
                 <com.google.android.material.button.MaterialButton
@@ -62,6 +64,7 @@
                     android:layout_weight="1"
                     android:text="Из галереи"
                     app:icon="@drawable/ic_documents"
+                    app:iconTint="@color/purple_500"
                     android:layout_marginStart="8dp" />
 
             </LinearLayout>
@@ -120,14 +123,15 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnSave"
-                    style="@style/ModernButton"
+                    style="@style/OutlineButton"
                     android:layout_width="16dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
                     android:layout_weight="1"
                     android:enabled="false"
                     android:text="Сохранить документ"
-                    app:icon="@drawable/ic_save" />
+                    app:icon="@drawable/ic_save"
+                    app:iconTint="@color/purple_500"/>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnBack"
@@ -137,7 +141,8 @@
                     android:layout_marginStart="8dp"
                     android:layout_weight="1"
                     android:text="Назад"
-                    app:icon="@drawable/ic_arrow_back" />
+                    app:icon="@drawable/ic_arrow_back"
+                    app:iconTint="@color/purple_500"/>
 
             </LinearLayout>
 

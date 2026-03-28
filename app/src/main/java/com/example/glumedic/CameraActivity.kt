@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.example.glumedic
 
 import android.Manifest
@@ -21,6 +23,7 @@ import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
+@Suppress("DEPRECATION")
 class CameraActivity : AppCompatActivity() {
 
     private lateinit var toolbar: MaterialToolbar

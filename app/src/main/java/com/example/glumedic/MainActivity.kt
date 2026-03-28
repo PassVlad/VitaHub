@@ -27,6 +27,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tvStats: TextView
     private lateinit var toolbar: MaterialToolbar
     private lateinit var tvMeasurementsCount: TextView
+//    private lateinit var fragBtnTest: com.google.android.material.button.MaterialButton
 
     private var selectedDateTime: String = ""
     private val measurements = mutableListOf<GlucoseMeasurement>()
@@ -58,6 +59,7 @@ class MainActivity : AppCompatActivity() {
         tvStats = findViewById(R.id.tvStats)
         toolbar = findViewById(R.id.toolbar)
         tvMeasurementsCount = findViewById(R.id.tvMeasurementsCount)
+//        fragBtnTest=findViewById(R.id.btnFrag);
     }
 
     private fun setupToolbar() {
@@ -98,6 +100,11 @@ class MainActivity : AppCompatActivity() {
                 showAboutDialog()
                 true
             }
+            R.id.action_digitize -> {
+                val intent = Intent(this, DocumentDigitizerActivity::class.java)
+                startActivity(intent)
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -130,10 +137,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun fragTest(){
+        val intent = Intent(this, MainAct::class.java)
+        startActivity(intent)
+    }
+
     private fun setupClickListeners() {
         btnDateTime.setOnClickListener { showDateTimePicker() }
         btnSave.setOnClickListener { saveMeasurement() }
         btnShowHistory.setOnClickListener { showHistory() }
+//        fragBtnTest.setOnClickListener { fragTest() }
     }
 
     private fun loadSavedMeasurements() {
