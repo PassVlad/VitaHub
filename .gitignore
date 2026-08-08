@@ -13,3 +13,9 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Website (React/Vite)
+/website/node_modules/
+/website/dist/
+/website/dev.log
+
