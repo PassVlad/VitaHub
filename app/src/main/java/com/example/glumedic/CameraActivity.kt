@@ -17,7 +17,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.appbar.MaterialToolbar
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
@@ -185,27 +192,42 @@ class CameraActivity : AppCompatActivity() {
     private fun saveImage() {
         if (currentBitmap != null) {
             try {
-                val documentsDir = File(getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), "glucose_docs")
-                if (!documentsDir.exists()) {
-                    documentsDir.mkdirs()
-                }
-
                 val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-                val file = File(documentsDir, "document_$timeStamp.jpg")
+                val fileName = "document_$timeStamp.jpg"
 
+                val file = File(cacheDir, fileName)
                 val outputStream = FileOutputStream(file)
                 currentBitmap!!.compress(Bitmap.CompressFormat.JPEG, 85, outputStream)
                 outputStream.flush()
                 outputStream.close()
 
-                // Просто показываем тост без диалога
-                Toast.makeText(this, "📸 Документ сохранен!", Toast.LENGTH_SHORT).show()
-
-                // Сбрасываем интерфейс для нового фото
-                resetCamera()
+                Toast.makeText(this, "📤 Загружаю на сервер...", Toast.LENGTH_SHORT).show()
+                uploadToServer(file, fileName)
 
             } catch (e: Exception) {
                 Toast.makeText(this, "Ошибка сохранения: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun uploadToServer(file: File, fileName: String) {
+        lifecycleScope.launch {
+            try {
+                val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
+                val part = MultipartBody.Part.createFormData("file", fileName, requestFile)
+                val resp = ApiClient.apiService.uploadDocumentFile(part)
+                withContext(Dispatchers.Main) {
+                    if (resp.isSuccessful) {
+                        Toast.makeText(this@CameraActivity, "📸 Документ загружен на сервер!", Toast.LENGTH_SHORT).show()
+                        resetCamera()
+                    } else {
+                        Toast.makeText(this@CameraActivity, "Ошибка сервера: ${resp.code()}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@CameraActivity, "Ошибка сети: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }

@@ -1,29 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#7721F6</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
+    <!-- Палитра сайта VitaHub -->
+    <color name="vh_bg">#060A13</color>
+    <color name="vh_bg_soft">#0B1220</color>
+    <color name="vh_surface">#0E1626</color>
+    <color name="vh_surface_2">#131D33</color>
+    <color name="vh_text">#EFE9FF</color>
+    <color name="vh_muted">#A5A0C4</color>
+    <color name="vh_dim">#77718F</color>
+    <color name="vh_primary">#A78BFA</color>
+    <color name="vh_fuchsia">#D946EF</color>
+    <color name="vh_accent">#E879F9</color>
+    <color name="vh_ok">#34D399</color>
+    <color name="vh_warning">#FBBF24</color>
+    <color name="vh_danger">#F87171</color>
+    <color name="vh_border">#2494A3B8</color>
+    <color name="vh_btn_text">#1E1145</color>
+    <color name="vh_glow">#2A1F4E</color>
+    <color name="vh_glow_soft">#1E1B33</color>
+
+    <!-- Стандартные -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="purple_200">#FFD8B4FE</color>
+    <color name="purple_500">#FFA78BFA</color>
+    <color name="purple_700">#FF8B5CF6</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
 
-    <!-- Modern colors for glucose tracker -->
-    <color name="primary_color">#3C3FCA</color>
-    <color name="primary_light">#A5B4FC</color>
-    <color name="bar">#FFBB86FC</color>
-    <color name="primary_dark">#4338CA</color>
-    <color name="secondary_color">#10B981</color>
-    <color name="accent_color">#F59E0B</color>
+    <!-- Совместимость со старыми именами -->
+    <color name="primary_color">@color/vh_primary</color>
+    <color name="primary_light">@color/vh_surface_2</color>
+    <color name="bar">@color/vh_primary</color>
+    <color name="primary_dark">#8B5CF6</color>
+    <color name="secondary_color">@color/vh_accent</color>
+    <color name="accent_color">@color/vh_warning</color>
 
-    <color name="text_primary">#1F2937</color>
-    <color name="text_secondary">#6B7280</color>
-    <color name="background_light">#F8FAFC</color>
+    <color name="text_primary">@color/vh_text</color>
+    <color name="text_secondary">@color/vh_muted</color>
+    <color name="background_light">@color/vh_bg</color>
 
-    <color name="hint">#474747</color>
+    <color name="hint">@color/vh_dim</color>
 
-    <color name="success_green">#10B981</color>
-    <color name="warning_orange">#F59E0B</color>
-    <color name="error_red">#EF4444</color>
-    <color name="gray_light">#FFD3D3D3</color>
+    <color name="gray">#3F3D5C</color>
+    <color name="enabledGray">#2E2E40</color>
+
+    <color name="success_green">@color/vh_ok</color>
+    <color name="warning_orange">@color/vh_warning</color>
+    <color name="error_red">@color/vh_danger</color>
+    <color name="gray_light">@color/vh_border</color>
 </resources>

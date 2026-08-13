@@ -11,10 +11,14 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.progressindicator.LinearProgressIndicator
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -25,6 +29,9 @@ import retrofit2.Response
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class DocumentDigitizerActivity : AppCompatActivity() {
 
@@ -141,12 +148,12 @@ class DocumentDigitizerActivity : AppCompatActivity() {
                 optimizedFile
             )
             val imagePart = MultipartBody.Part.createFormData(
-                "image",
+                "file",
                 optimizedFile.name,
                 requestFile
             )
 
-            val call = ApiClient.api.recognizeImage(imagePart)
+            val call = ApiClient.ocrApi.recognizeImage(imagePart)
             call.enqueue(object : Callback<OcrResponse> {
                 override fun onResponse(call: Call<OcrResponse>, response: Response<OcrResponse>) {
                     progressBar.visibility = android.view.View.GONE
@@ -268,8 +275,11 @@ class DocumentDigitizerActivity : AppCompatActivity() {
         if (recognizedText.isNotEmpty()) {
             AlertDialog.Builder(this)
                 .setTitle("Сохранить результат")
-                .setMessage("Текст будет скопирован в буфер обмена")
-                .setPositiveButton("Копировать") { _, _ ->
+                .setMessage("Распознанный текст можно сохранить в документы или скопировать в буфер обмена")
+                .setPositiveButton("💾 В документы") { _, _ ->
+                    uploadTextToDocuments()
+                }
+                .setNeutralButton("Копировать") { _, _ ->
                     val clipboard = getSystemService(CLIPBOARD_SERVICE) as android.content.ClipboardManager
                     val clip = android.content.ClipData.newPlainText("OCR Result", recognizedText)
                     clipboard.setPrimaryClip(clip)
@@ -277,6 +287,28 @@ class DocumentDigitizerActivity : AppCompatActivity() {
                 }
                 .setNegativeButton("Отмена", null)
                 .show()
+        }
+    }
+
+    private fun uploadTextToDocuments() {
+        val name = "OCR_${SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())}"
+        lifecycleScope.launch {
+            try {
+                val resp = ApiClient.apiService.uploadDocument(
+                    UploadDocumentRequest(filename = name, text = recognizedText)
+                )
+                withContext(Dispatchers.Main) {
+                    if (resp.isSuccessful) {
+                        Toast.makeText(this@DocumentDigitizerActivity, "Документ сохранён на сервер", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(this@DocumentDigitizerActivity, "Ошибка сервера: ${resp.code()}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@DocumentDigitizerActivity, "Ошибка сети: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 

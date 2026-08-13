@@ -1,6 +1,6 @@
 import { NavLink, Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/useAuth'
-import { HeartPulse, LogOut, FolderOpen, Menu, X } from 'lucide-react'
+import { HeartPulse, LogOut, FolderOpen, Bot, ScanLine, Menu, X } from 'lucide-react'
 import { useState } from 'react'
 
 export default function Navbar() {
@@ -39,8 +39,14 @@ export default function Navbar() {
               <NavLink to="/app" className={linkClass}>
                 Показатели
               </NavLink>
+              <NavLink to="/chat" className={linkClass}>
+                Мегамозг
+              </NavLink>
               <NavLink to="/docs" className={linkClass}>
                 Документы
+              </NavLink>
+              <NavLink to="/ocr" className={linkClass}>
+                Оцифровка
               </NavLink>
             </>
           )}
@@ -84,8 +90,14 @@ export default function Navbar() {
               <NavLink to="/app" className={linkClass} onClick={() => setOpen(false)}>
                 Показатели
               </NavLink>
+              <NavLink to="/chat" className={linkClass} onClick={() => setOpen(false)}>
+                <Bot size={16} /> Мегамозг
+              </NavLink>
               <NavLink to="/docs" className={linkClass} onClick={() => setOpen(false)}>
                 <FolderOpen size={16} /> Документы
+              </NavLink>
+              <NavLink to="/ocr" className={linkClass} onClick={() => setOpen(false)}>
+                <ScanLine size={16} /> Оцифровка
               </NavLink>
               <button className="btn btn-ghost btn-sm" onClick={handleLogout}>
                 <LogOut size={16} /> Выйти

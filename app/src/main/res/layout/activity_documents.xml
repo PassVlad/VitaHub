@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/gradient_background"
+    tools:context=".DocumentsActivity">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:title="Мои документы"
+        android:background="@android:color/transparent"
+        style="@style/ActionBar"
+        app:navigationIcon="?attr/homeAsUpIndicator" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnAddDocument"
+        style="@style/ModernButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="Добавить документ"
+        app:icon="@drawable/ic_documents"
+        app:iconTint="@color/vh_btn_text" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvDocuments"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:paddingHorizontal="16dp"
+        android:clipToPadding="false" />
+
+    <TextView
+        android:id="@+id/tvEmpty"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="Документов пока нет.\nДобавьте текст или распознайте документ через OCR."
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:visibility="gone" />
+</LinearLayout>

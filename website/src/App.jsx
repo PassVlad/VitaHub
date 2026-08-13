@@ -10,6 +10,8 @@ const Login = lazy(() => import('./pages/Login'))
 const Register = lazy(() => import('./pages/Register'))
 const Dashboard = lazy(() => import('./pages/Dashboard'))
 const DocumentsPage = lazy(() => import('./pages/DocumentsPage'))
+const ChatPage = lazy(() => import('./pages/ChatPage'))
+const OcrPage = lazy(() => import('./pages/OcrPage'))
 
 function PageLoader() {
   return (
@@ -66,6 +68,22 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <DocumentsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/chat"
+            element={
+              <ProtectedRoute>
+                <ChatPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/ocr"
+            element={
+              <ProtectedRoute>
+                <OcrPage />
               </ProtectedRoute>
             }
           />

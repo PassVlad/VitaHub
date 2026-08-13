@@ -14,9 +14,18 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
+import androidx.lifecycle.lifecycleScope
+import com.example.glumedic.ui.ChartView
+import com.example.glumedic.ui.DataPoint
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textfield.TextInputEditText
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -29,27 +38,46 @@ class Glucose : AppCompatActivity() {
     private lateinit var tvDateTime: TextView
     private lateinit var btnSave: com.google.android.material.button.MaterialButton
     private lateinit var btnShowHistory: com.google.android.material.button.MaterialButton
-    private lateinit var tvStats: TextView
     private lateinit var toolbar: MaterialToolbar
     private lateinit var tvMeasurementsCount: TextView
+    private lateinit var chartView: ChartView
+    private lateinit var tvAvg: TextView
+    private lateinit var tvMin: TextView
+    private lateinit var tvMax: TextView
 
-    private var selectedDateTime: String = ""
-    private val measurements = mutableListOf<GlucoseMeasurement>()
-    private lateinit var prefsHelper: SharedPreferencesHelper
+    private var selectedTimeMillis: Long = System.currentTimeMillis()
+    private val measurements = mutableListOf<VitalMeasurement>()
+    private var autoRefreshJob: Job? = null
+    private var isLoading = false
+
+    private val token: String?
+        get() = getSharedPreferences("app_prefs", MODE_PRIVATE)
+            .getString("access_token", null)
+
+    private val displayFormat = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault())
+    private val serverFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_glucose)
 
-        prefsHelper = SharedPreferencesHelper(this)
-
         initViews()
         setupToolbar()
         setupClickListeners()
-        selectedDateTime = getCurrentDateTime()
         updateDateTimeButton()
 
-        loadSavedMeasurements()
+        loadData()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        startAutoRefresh()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        autoRefreshJob?.cancel()
+        autoRefreshJob = null
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
@@ -82,9 +110,13 @@ class Glucose : AppCompatActivity() {
         tvDateTime = findViewById(R.id.tvDateTime)
         btnSave = findViewById(R.id.btnSave)
         btnShowHistory = findViewById(R.id.btnShowHistory)
-        tvStats = findViewById(R.id.tvStats)
         toolbar = findViewById(R.id.toolbar)
         tvMeasurementsCount = findViewById(R.id.tvMeasurementsCount)
+        chartView = findViewById(R.id.weeklyChart)
+        chartView.setValueScale(10, "ммоль/л")
+        tvAvg = findViewById(R.id.tvAvg)
+        tvMin = findViewById(R.id.tvMin)
+        tvMax = findViewById(R.id.tvMax)
     }
 
     private fun setupToolbar() {
@@ -101,10 +133,6 @@ class Glucose : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.action_camera -> {
-                openCameraActivity()
-                true
-            }
             R.id.action_history -> {
                 showHistory()
                 true
@@ -121,11 +149,6 @@ class Glucose : AppCompatActivity() {
                 showAboutDialog()
                 true
             }
-            R.id.action_digitize -> {
-                val intent = Intent(this, DocumentDigitizerActivity::class.java)
-                startActivity(intent)
-                true
-            }
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -135,50 +158,203 @@ class Glucose : AppCompatActivity() {
         startActivity(intent)
     }
 
-    private fun openCameraActivity() {
-        val intent = Intent(this, CameraActivity::class.java)
-        startActivity(intent)
-    }
-
     private fun showAboutDialog() {
         AlertDialog.Builder(this)
             .setTitle("О приложении")
-            .setMessage("Глюкоза Трекер\nВерсия 1.0\n\nПриложение для отслеживания уровня глюкозы в крови.")
+            .setMessage("VitaHub\nВерсия 1.0\n\nПриложение для отслеживания жизненных показателей.")
             .setPositiveButton("OK", null)
             .show()
     }
-
-    private fun updateMeasurementsCounter() {
-        if (measurements.isNotEmpty()) {
-            tvMeasurementsCount.text = measurements.size.toString()
-            tvMeasurementsCount.visibility = TextView.VISIBLE
-        } else {
-            tvMeasurementsCount.visibility = TextView.GONE
-        }
-    }
-
 
     private fun setupClickListeners() {
         btnDateTime.setOnClickListener { showDateTimePicker() }
         btnSave.setOnClickListener { saveMeasurement() }
         btnShowHistory.setOnClickListener { showHistory() }
-
     }
 
-    private fun loadSavedMeasurements() {
-        val savedMeasurements = prefsHelper.getMeasurements()
-        measurements.clear()
-        measurements.addAll(savedMeasurements)
-        updateStatistics()
-        updateMeasurementsCounter() // Обновляем счетчик
+    // ---------- Данные (кэш + сервер) ----------
 
-        if (measurements.isNotEmpty()) {
-            showToast("Загружено ${measurements.size} сохраненных измерений")
+    private fun loadData() {
+        if (isLoading) return
+        isLoading = true
+        refreshFromCache()
+        if (!VitalStore.isOnline()) {
+            isLoading = false
+            showToast(if (measurements.isEmpty())
+                "Оффлайн: данных нет"
+            else
+                "Оффлайн: показаны данные из кэша (${measurements.size})")
+            return
+        }
+        val currentToken = token
+        if (currentToken.isNullOrEmpty()) {
+            isLoading = false
+            showToast("Требуется авторизация")
+            return
+        }
+        lifecycleScope.launch {
+            try {
+                val synced = withContext(Dispatchers.IO) { VitalStore.syncPending() }
+                val metricsResp = ApiClient.apiService.getMetrics()
+                val listResp = ApiClient.apiService.getMeasurements("glucose", 200)
+                val metric = metricsResp.body()?.firstOrNull { it.key == "glucose" }
+                withContext(Dispatchers.Main) {
+                    metric?.let { m ->
+                        chartView.setMetricLimits(m.min, m.max)
+                        chartView.setDecimals(m.decimals)
+                    }
+                    applyServerData(listResp.body(), synced)
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    showToast("Ошибка загрузки: ${e.message}")
+                }
+            } finally {
+                isLoading = false
+            }
         }
     }
 
-    private fun saveMeasurementsToPrefs() {
-        prefsHelper.saveMeasurements(measurements)
+    private fun startAutoRefresh() {
+        if (autoRefreshJob?.isActive == true) return
+        autoRefreshJob = lifecycleScope.launch {
+            while (isActive) {
+                delay(20_000)
+                loadData(silent = true)
+            }
+        }
+    }
+
+    private fun loadData(silent: Boolean) {
+        if (isLoading) return
+        isLoading = true
+        refreshFromCache()
+        if (!VitalStore.isOnline() || token.isNullOrEmpty()) {
+            isLoading = false
+            return
+        }
+        lifecycleScope.launch {
+            try {
+                val synced = withContext(Dispatchers.IO) { VitalStore.syncPending() }
+                val metricsResp = ApiClient.apiService.getMetrics()
+                val listResp = ApiClient.apiService.getMeasurements("glucose", 200)
+                val metric = metricsResp.body()?.firstOrNull { it.key == "glucose" }
+                withContext(Dispatchers.Main) {
+                    metric?.let { m ->
+                        chartView.setMetricLimits(m.min, m.max)
+                        chartView.setDecimals(m.decimals)
+                    }
+                    applyServerData(listResp.body(), synced, silent)
+                }
+            } catch (e: Exception) {
+                if (!silent) {
+                    withContext(Dispatchers.Main) {
+                        showToast("Ошибка загрузки: ${e.message}")
+                    }
+                }
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+
+    private fun refreshFromCache() {
+        measurements.clear()
+        measurements.addAll(VitalStore.cacheFor("glucose"))
+        applyCacheToUi()
+    }
+
+    private fun applyCacheToUi() {
+        tvMeasurementsCount.text = measurements.size.toString()
+        tvMeasurementsCount.visibility =
+            if (measurements.isNotEmpty()) TextView.VISIBLE else TextView.GONE
+        updateStats()
+        updateChartFromMeasurements()
+    }
+
+    private fun updateStats() {
+        if (measurements.isEmpty()) {
+            tvAvg.text = "—"
+            tvMin.text = "—"
+            tvMax.text = "—"
+            return
+        }
+        val values = measurements.map { it.value }
+        tvAvg.text = String.format(Locale.getDefault(), "%.1f", values.average())
+        tvMin.text = String.format(Locale.getDefault(), "%.1f", values.min())
+        tvMax.text = String.format(Locale.getDefault(), "%.1f", values.max())
+    }
+
+    private fun updateChartFromMeasurements() {
+        val chartPoints = measurements
+            .map { DataPoint(parseServerTime(it.measured_at), (it.value * 10).toInt()) }
+            .sortedBy { it.timestamp }
+        chartView.setPoints(chartPoints)
+    }
+
+    private fun applyServerData(
+        list: List<VitalMeasurement>?,
+        synced: Int,
+        silent: Boolean = false
+    ) {
+        list?.let {
+            VitalStore.setCache("glucose", it)
+            refreshFromCache()
+        }
+        if (silent) return
+        val msg = if (synced > 0)
+            "✓ Синхронизировано измерений: $synced"
+        else
+            "Загружено ${measurements.size} измерений"
+        showToast(msg)
+    }
+
+    private fun saveMeasurement() {
+        val glucoseStr = etGlucose.text.toString().trim()
+
+        if (glucoseStr.isEmpty()) {
+            showToast("Введите уровень глюкозы")
+            return
+        }
+
+        val value = glucoseStr.toDoubleOrNull()
+        if (value == null) {
+            showToast("Некорректное значение глюкозы")
+            return
+        }
+
+        val meal = etMeal.text.toString().trim()
+        val notes = etNotes.text.toString().trim()
+        val fullNotes = listOfNotNull(meal.ifBlank { null }, notes.ifBlank { null })
+            .joinToString(" | ")
+
+        // 1. Всегда сохраняем локально (кэш)
+        VitalStore.addLocal(
+            "glucose",
+            value,
+            null,
+            serverFormat.format(Date(selectedTimeMillis)),
+            fullNotes.ifBlank { null }
+        )
+        clearForm()
+        refreshFromCache()
+
+        // 2. На сервер — только если есть сеть
+        if (VitalStore.isOnline()) {
+            lifecycleScope.launch {
+                val synced = withContext(Dispatchers.IO) { VitalStore.syncPending() }
+                withContext(Dispatchers.Main) {
+                    if (synced > 0) {
+                        showToast("✓ Измерение сохранено и синхронизировано")
+                        refreshFromCache()
+                    } else {
+                        showToast("Сохранено в кэш")
+                    }
+                }
+            }
+        } else {
+            showToast("💾 Измерение сохранено в кэш (оффлайн)")
+        }
     }
 
     private fun showDateTimePicker() {
@@ -198,7 +374,7 @@ class Glucose : AppCompatActivity() {
                             set(Calendar.HOUR_OF_DAY, hourOfDay)
                             set(Calendar.MINUTE, minute)
                         }
-                        selectedDateTime = formatDateTime(selectedDate)
+                        selectedTimeMillis = selectedDate.timeInMillis
                         updateDateTimeButton()
                     },
                     currentDate.get(Calendar.HOUR_OF_DAY),
@@ -212,71 +388,17 @@ class Glucose : AppCompatActivity() {
         ).show()
     }
 
-    private fun saveMeasurement() {
-        val glucoseStr = etGlucose.text.toString().trim()
-
-        if (glucoseStr.isEmpty()) {
-            showToast("Введите уровень глюкозы")
-            return
-        }
-
-        try {
-            val glucoseLevel = glucoseStr.toDouble()
-            val mealTime = etMeal.text.toString().trim()
-            val notes = etNotes.text.toString().trim()
-
-            val measurement = GlucoseMeasurement(
-                glucoseLevel = glucoseLevel,
-                dateTime = selectedDateTime,
-                mealTime = mealTime,
-                notes = notes
-            )
-
-            measurements.add(measurement)
-            saveMeasurementsToPrefs()
-            updateStatistics()
-            updateMeasurementsCounter() // Обновляем счетчик
-            clearForm()
-            showToast("✓ Измерение сохранено")
-
-        } catch (e: NumberFormatException) {
-            showToast("Некорректное значение глюкозы")
-        }
-    }
-
-    private fun updateStatistics() {
-        if (measurements.isEmpty()) {
-            tvStats.text = "Данных пока нет\nДобавьте первое измерение"
-            return
-        }
-
-        val glucoseLevels = measurements.map { it.glucoseLevel }
-        val average = glucoseLevels.average()
-        val min = glucoseLevels.minOrNull() ?: 0.0
-        val max = glucoseLevels.maxOrNull() ?: 0.0
-
-        val stats = """
-            📊 Всего измерений: ${measurements.size}
-            📈 Средний уровень: ${"%.1f".format(average)} ммоль/л
-            📉 Минимальный: ${"%.1f".format(min)} ммоль/л
-            📈 Максимальный: ${"%.1f".format(max)} ммоль/л
-        """.trimIndent()
-
-        tvStats.text = stats
-    }
-
     private fun showHistory() {
         if (measurements.isEmpty()) {
             showToast("История измерений пуста")
             return
         }
 
-        val history = measurements.sortedByDescending { it.dateTime }
-            .joinToString("\n\n") { measurement ->
-                "🕒 ${measurement.dateTime}\n" +
-                        "🩸 ${measurement.glucoseLevel} ммоль/л\n" +
-                        "🍽 Прием пищи: ${measurement.mealTime}\n" +
-                        if (measurement.notes.isNotEmpty()) "📝 Заметки: ${measurement.notes}" else ""
+        val history = measurements.sortedByDescending { it.measured_at }
+            .joinToString("\n\n") { m ->
+                val date = formatServerTime(m.measured_at)
+                val note = m.notes?.takeIf { it.isNotBlank() }?.let { "\n📝 $it" } ?: ""
+                "🕒 $date\n🩸 ${formatValue(m.value)} ммоль/л$note"
             }
 
         AlertDialog.Builder(this)
@@ -290,35 +412,41 @@ class Glucose : AppCompatActivity() {
         etGlucose.text?.clear()
         etMeal.text?.clear()
         etNotes.text?.clear()
-        selectedDateTime = getCurrentDateTime()
+        selectedTimeMillis = System.currentTimeMillis()
         updateDateTimeButton()
     }
 
-    private fun getCurrentDateTime(): String {
-        return formatDateTime(Calendar.getInstance())
-    }
-
-    private fun formatDateTime(calendar: Calendar): String {
-        val sdf = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault())
-        return sdf.format(calendar.time)
-    }
-
     private fun updateDateTimeButton() {
-        tvDateTime.text = selectedDateTime
+        tvDateTime.text = displayFormat.format(Date(selectedTimeMillis))
         tvDateTime.setTextColor(resources.getColor(R.color.text_primary))
+    }
+
+    private fun formatValue(value: Double): String {
+        return if (value == value.toLong().toDouble()) {
+            value.toLong().toString()
+        } else {
+            String.format(Locale.getDefault(), "%.1f", value)
+        }
+    }
+
+    private fun parseServerTime(raw: String): Long {
+        return try {
+            serverFormat.parse(raw.replace("Z", ""))?.time ?: System.currentTimeMillis()
+        } catch (e: Exception) {
+            System.currentTimeMillis()
+        }
+    }
+
+    private fun formatServerTime(raw: String): String {
+        return try {
+            val parsed = serverFormat.parse(raw.replace("Z", "")) ?: return raw
+            displayFormat.format(parsed)
+        } catch (e: Exception) {
+            raw
+        }
     }
 
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        saveMeasurementsToPrefs()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        saveMeasurementsToPrefs()
     }
 }

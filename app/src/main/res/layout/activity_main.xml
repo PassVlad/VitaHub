@@ -14,17 +14,6 @@
         android:orientation="vertical"
         android:gravity="center">
 
-
-        <!-- Заголовок с иконкой -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="sans-serif-light"
-            android:text="@string/app_name"
-            android:textColor="@color/white"
-            android:textSize="28sp"
-            android:textStyle="bold" />
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -36,19 +25,37 @@
             <ImageView
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:src="@drawable/ic_glucose"
+                android:src="@drawable/icon"
                 android:layout_marginEnd="12dp"
                 app:tint="@color/white" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/selectAct"
-                android:textSize="28sp"
-                android:textStyle="bold"
+                android:fontFamily="@font/sora"
+                android:text="@string/app_name"
                 android:textColor="@color/white"
-                android:fontFamily="sans-serif-light" />
+                android:textSize="28sp"
+                android:textStyle="bold" />
+
         </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/selectAct"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:fontFamily="@font/sora" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Выберите раздел для отслеживания показателей"
+            android:textSize="14sp"
+            android:textColor="@color/vh_muted"
+            android:layout_marginBottom="8dp" />
 
         <LinearLayout
             android:id="@+id/bottom_navigation"
@@ -56,12 +63,37 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="10dp"
+                android:background="@color/white"
+                android:alpha="0.3"/>
+
+            <Button
+                android:id="@+id/btn_chat_menu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/btnChat"
+                style="@style/ModernButton"
+                app:icon="@drawable/ic_medical"
+                app:iconTint="@color/btn_text_color"
+                app:autoSizeTextType="uniform"/>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="10dp"
+                android:background="@color/white"
+                android:alpha="0.3"/>
+
             <Button
                 android:id="@+id/btn_glu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/btnGlu"
                 style="@style/ModernButton"
+                app:icon="@drawable/ic_glucose"
+                app:iconTint="@color/btn_text_color"
                 app:autoSizeTextType="uniform"/>
 
             <View
@@ -73,11 +105,15 @@
 
             <Button
                 android:id="@+id/btn_press"
+                style="@style/ModernButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:clickable="true"
+                android:enabled="false"
                 android:text="@string/btnPress"
-                style="@style/ModernButton"
-                app:autoSizeTextType="uniform"/>
+                app:icon="@drawable/ic_blood_drop"
+                app:iconTint="@color/btn_text_color"
+                app:autoSizeTextType="uniform" />
 
             <View
                 android:layout_width="match_parent"
@@ -88,11 +124,14 @@
 
             <Button
                 android:id="@+id/btn_next"
+                style="@style/ModernButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:enabled="false"
                 android:text="@string/btnNext"
-                style="@style/ModernButton"
-                app:autoSizeTextType="uniform"/>
+                app:icon="@drawable/ic_documents"
+                app:iconTint="@color/btn_text_color"
+                app:autoSizeTextType="uniform" />
 
         </LinearLayout>
     </LinearLayout>

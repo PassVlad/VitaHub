@@ -144,7 +144,7 @@ export default function Dashboard() {
       }
     }
 
-    const measured_at = datetime ? new Date(datetime).toISOString() : undefined
+    const measured_at = datetime || undefined
 
     try {
       await api.addMeasurement(token, {

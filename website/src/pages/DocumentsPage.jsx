@@ -53,7 +53,7 @@ export default function DocumentsPage() {
   const filtered = docs.filter((d) =>
     !query.trim() ||
     (d.filename || '').toLowerCase().includes(query.trim().toLowerCase()) ||
-    (d.text_preview || '').toLowerCase().includes(query.trim().toLowerCase())
+    (d.preview || '').toLowerCase().includes(query.trim().toLowerCase())
   )
 
   const handleTextSubmit = async (e) => {
@@ -236,11 +236,11 @@ export default function DocumentsPage() {
                       <div className="doc-main">
                         <div className="doc-name">{d.filename || 'Без названия'}</div>
                         <div className="doc-meta">
-                          <span>🕒 {fmtDate(d.created_at)}</span>
+                          <span>🕒 {fmtDate(d.uploaded_at || d.created_at)}</span>
                           {d.file_size != null && <span>· {fmtSize(d.file_size)}</span>}
                         </div>
-                        {d.text_preview && (
-                          <div className="doc-preview">{d.text_preview}</div>
+                        {d.preview && (
+                          <div className="doc-preview">{d.preview}</div>
                         )}
                       </div>
                       <span className={`doc-badge ${d.has_text ? 'ok' : 'no'}`}>

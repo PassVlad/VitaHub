@@ -138,7 +138,7 @@
                     android:textColor="@color/text_primary"
                     android:lineSpacingExtra="4dp"
                     android:padding="12dp"
-                    android:background="@color/gray_light"
+                    android:background="@color/vh_surface_2"
                     android:layout_marginBottom="12dp" />
 
                 <com.google.android.material.button.MaterialButton

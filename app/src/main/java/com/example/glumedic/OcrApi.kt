@@ -8,8 +8,6 @@ import retrofit2.http.Part
 
 interface OcrApi {
     @Multipart
-    @POST("recognize")
-    fun recognizeImage(
-        @Part image: MultipartBody.Part
-    ): Call<OcrResponse>
+    @POST("api/ocr-fast/")
+    fun recognizeImage(@Part image: MultipartBody.Part): Call<OcrResponse>
 }

@@ -1,5 +1,20 @@
 const OVERRIDE = import.meta.env.VITE_API_URL
 
+const TOKEN_KEY = 'glumedic_access_token'
+const USER_KEY = 'glumedic_user'
+
+// Сессия недействительна (токен просрочен или пароль изменён) —
+// сбрасываем локальные данные и отправляем на страницу входа.
+function handleUnauthorized() {
+  if (localStorage.getItem(TOKEN_KEY)) {
+    localStorage.removeItem(TOKEN_KEY)
+    localStorage.removeItem(USER_KEY)
+    if (window.location.pathname !== '/login') {
+      window.location.href = '/login'
+    }
+  }
+}
+
 // По умолчанию используем относительные пути (dev-прокси в vite.config.js
 // перенаправляет /api на бэкенд). При необходимости можно переопределить
 // через VITE_API_URL — например, для продакшена за reverse-proxy.
@@ -64,6 +79,7 @@ async function request(url, options = {}) {
   const data = parseBody(await res.text())
 
   if (!res.ok) {
+    if (res.status === 401) handleUnauthorized()
     throw new Error(extractErrorMessage(data, res.status))
   }
 

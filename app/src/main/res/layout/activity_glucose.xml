@@ -20,10 +20,9 @@
             style="@style/ActionBar"
             app:menu="@menu/main_menu"
             app:navigationIcon="@drawable/ic_arrow_back"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:popupTheme="@style/ThemeOverlay.VitaHub.Menu"
             android:layout_marginBottom="24dp">
 
-            <!-- Дополнительные элементы в Toolbar -->
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -74,22 +73,39 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Глюкоза Трекер"
+                android:text="Глюкоза"
                 android:textSize="28sp"
                 android:textStyle="bold"
                 android:textColor="@color/white"
-                android:fontFamily="sans-serif-light" />
+                android:fontFamily="@font/sora" />
 
         </LinearLayout>
+
+        <!-- Подзаголовок -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Трекер уровня сахара в крови"
+            android:textSize="15sp"
+            android:textColor="@color/vh_muted"
+            android:gravity="center"
+            android:layout_marginBottom="24dp" />
 
         <!-- Карточка для ввода данных -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="20dp"
+            app:cardCornerRadius="18dp"
             app:cardElevation="8dp"
             android:layout_marginBottom="24dp"
-            app:cardBackgroundColor="@color/white">
+            app:strokeColor="@color/vh_border"
+            app:strokeWidth="1dp"
+            app:cardBackgroundColor="@color/vh_surface">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="6dp"
+                android:background="@drawable/card_accent_top" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -112,7 +128,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="20dp"
-                    app:boxStrokeColor="@color/gray_light"
                     app:startIconDrawable="@drawable/ic_blood_drop"
                     app:startIconTint="@color/primary_color">
 
@@ -142,9 +157,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="20dp"
-                    app:cardBackgroundColor="@color/white"
+                    app:cardBackgroundColor="@color/vh_surface_2"
                     android:clickable="true"
-                    app:strokeColor="@color/gray_light"
+                    app:strokeColor="@color/vh_border"
+                    app:strokeWidth="1dp"
                     app:cardCornerRadius="12dp"
                     app:cardElevation="2dp">
 
@@ -197,7 +213,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="20dp"
-                    app:boxStrokeColor="@color/gray_light"
                     app:startIconDrawable="@drawable/ic_meal"
                     app:startIconTint="@color/primary_color">
 
@@ -255,7 +270,7 @@
             android:text="Сохранить измерение"
             android:layout_marginBottom="16dp"
             app:icon="@drawable/ic_save"
-            app:iconTint="@color/white" />
+            app:iconTint="@color/vh_btn_text" />
 
         <!-- Кнопка истории -->
         <com.google.android.material.button.MaterialButton
@@ -266,15 +281,17 @@
             android:text="История измерений"
             android:layout_marginBottom="32dp"
             app:icon="@drawable/ic_history"
-            app:iconTint="@color/white" />
+            app:iconTint="@color/vh_btn_text" />
 
         <!-- Карточка статистики -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="20dp"
+            app:cardCornerRadius="18dp"
             app:cardElevation="6dp"
-            app:cardBackgroundColor="@color/white">
+            app:strokeColor="@color/vh_border"
+            app:strokeWidth="1dp"
+            app:cardBackgroundColor="@color/vh_surface">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -292,15 +309,95 @@
                     android:gravity="center"
                     android:layout_marginBottom="16dp" />
 
-                <TextView
-                    android:id="@+id/tvStats"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Данных пока нет"
-                    android:textSize="16sp"
-                    android:textColor="@color/text_secondary"
-                    android:gravity="center"
-                    android:lineSpacingExtra="4dp" />
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="16dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="8dp"
+                        android:orientation="vertical"
+                        android:background="@drawable/chip_background"
+                        android:padding="12dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Среднее"
+                            android:textSize="12sp"
+                            android:textColor="@color/vh_muted" />
+
+                        <TextView
+                            android:id="@+id/tvAvg"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="—"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/vh_text" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="8dp"
+                        android:orientation="vertical"
+                        android:background="@drawable/chip_background"
+                        android:padding="12dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Минимум"
+                            android:textSize="12sp"
+                            android:textColor="@color/vh_muted" />
+
+                        <TextView
+                            android:id="@+id/tvMin"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="—"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/vh_text" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:background="@drawable/chip_background"
+                        android:padding="12dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Максимум"
+                            android:textSize="12sp"
+                            android:textColor="@color/vh_muted" />
+
+                        <TextView
+                            android:id="@+id/tvMax"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="—"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/vh_text" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <com.example.glumedic.ui.ChartView
+                    android:id="@+id/weeklyChart"
+                    android:layout_width="match_parent"
+                    android:layout_height="220dp"
+                    android:layout_marginTop="8dp" />
 
             </LinearLayout>
 

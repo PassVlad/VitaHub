@@ -1,10 +1,25 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Theme.GlucoseTracker" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/primary_color</item>
-        <item name="colorPrimaryDark">@color/primary_dark</item>
-        <item name="colorAccent">@color/secondary_color</item>
-        <item name="colorOnSurface">@color/white</item>
-        <item name="colorOnSurfaceVariant">@color/white</item>
+
+    <style name="Theme.VitaHub" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="colorPrimary">@color/vh_primary</item>
+        <item name="colorOnPrimary">@color/vh_btn_text</item>
+        <item name="colorPrimaryDark">@color/vh_bg</item>
+        <item name="colorSecondary">@color/vh_fuchsia</item>
+        <item name="colorOnSecondary">@color/vh_btn_text</item>
+        <item name="colorAccent">@color/vh_accent</item>
+        <item name="colorSurface">@color/vh_surface</item>
+        <item name="colorOnSurface">@color/vh_text</item>
+        <item name="colorSurfaceVariant">@color/vh_surface_2</item>
+        <item name="colorOnSurfaceVariant">@color/vh_muted</item>
+        <item name="colorOutline">@color/vh_border</item>
+        <item name="android:colorBackground">@color/vh_bg</item>
+        <item name="android:windowBackground">@color/vh_bg</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        <item name="android:forceDarkAllowed">false</item>
+        <item name="android:fontFamily">@font/inter</item>
     </style>
 
     <style name="ActionBar" parent="Widget.MaterialComponents.Toolbar.Primary">
@@ -16,60 +31,83 @@
         <item name="background">@android:color/transparent</item>
     </style>
 
-    <!-- Остальные стили -->
+    <!-- Popup-меню -->
+    <style name="ThemeOverlay.VitaHub.Menu" parent="ThemeOverlay.Material3.Dark">
+        <item name="android:colorBackground">@color/vh_surface_2</item>
+        <item name="colorSurface">@color/vh_surface_2</item>
+        <item name="colorOnSurface">@color/vh_text</item>
+        <item name="android:textColorPrimary">@color/vh_text</item>
+        <item name="colorControlNormal">@color/vh_muted</item>
+        <item name="android:windowBackground">@color/vh_surface_2</item>
+    </style>
+
+    <!-- Поля ввода -->
     <style name="ModernTextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="boxCornerRadiusBottomEnd">12dp</item>
         <item name="boxCornerRadiusBottomStart">12dp</item>
         <item name="boxCornerRadiusTopEnd">12dp</item>
         <item name="boxCornerRadiusTopStart">12dp</item>
-        <item name="boxStrokeColor">@color/primary_light</item>
-        <item name="hintTextColor">@color/text_secondary</item>
+        <item name="boxStrokeColor">@color/textinput_stroke</item>
+        <item name="boxStrokeWidth">1dp</item>
+        <item name="boxStrokeWidthFocused">2dp</item>
+        <item name="hintTextColor">@color/vh_muted</item>
+        <item name="android:textColorHint">@color/vh_muted</item>
     </style>
 
+    <style name="ModernEditText" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxCornerRadiusBottomEnd">12dp</item>
+        <item name="boxCornerRadiusBottomStart">12dp</item>
+        <item name="boxCornerRadiusTopEnd">12dp</item>
+        <item name="boxCornerRadiusTopStart">12dp</item>
+        <item name="boxStrokeWidth">1dp</item>
+        <item name="boxStrokeWidthFocused">2dp</item>
+        <item name="boxStrokeColor">@color/textinput_stroke</item>
+        <item name="hintTextColor">@color/vh_muted</item>
+        <item name="android:textColorHint">@color/vh_muted</item>
+    </style>
+
+    <!-- Заполненные кнопки (градиент сайта) -->
     <style name="ModernButton" parent="Widget.MaterialComponents.Button">
-        <item name="backgroundTint">@color/purple_500</item>
-        <item name="cornerRadius">16dp</item>
-        <item name="android:elevation">4dp</item>
+        <item name="backgroundTint">@null</item>
+        <item name="android:background">@drawable/btn_background</item>
+        <item name="cornerRadius">0dp</item>
+        <item name="android:elevation">0dp</item>
         <item name="android:minHeight">56dp</item>
-        <item name="android:textColor">@color/white</item>
+        <item name="android:textColor">@color/btn_text_color</item>
         <item name="android:textSize">16sp</item>
         <item name="android:textStyle">bold</item>
-        <item name="strokeColor">@color/primary_color</item>
-        <item name="strokeWidth">2dp</item>
+        <item name="android:stateListAnimator">@null</item>
     </style>
 
     <style name="OutlineButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
-        <item name="strokeColor">@color/primary_color</item>
-        <item name="backgroundTint">@color/white</item>
+        <item name="strokeColor">@color/vh_primary</item>
+        <item name="backgroundTint">@android:color/transparent</item>
         <item name="strokeWidth">2dp</item>
         <item name="cornerRadius">16dp</item>
         <item name="android:minHeight">56dp</item>
-        <item name="android:textColor">@color/primary_color</item>
+        <item name="android:textColor">@color/vh_primary</item>
         <item name="android:textSize">16sp</item>
         <item name="android:textStyle">bold</item>
     </style>
 
-    <!-- Стиль для светлого DatePicker -->
+    <!-- Тёмные диалоги -->
     <style name="DatePickerDialogTheme" parent="ThemeOverlay.Material3.MaterialCalendar">
-        <item name="colorPrimary">@color/primary_color</item>
-        <item name="colorOnPrimary">@color/white</item>
-        <item name="colorSurface">@color/white</item>
-        <item name="colorOnSurface">@color/text_primary</item>
-        <item name="android:windowBackground">@color/white</item>
+        <item name="colorPrimary">@color/vh_primary</item>
+        <item name="colorOnPrimary">@color/vh_btn_text</item>
+        <item name="colorSurface">@color/vh_surface_2</item>
+        <item name="colorOnSurface">@color/vh_text</item>
+        <item name="android:windowBackground">@color/vh_bg</item>
     </style>
 
-    <!-- Стиль для светлого TimePicker -->
     <style name="TimePickerDialogTheme" parent="ThemeOverlay.Material3.Dialog">
-        <item name="colorPrimary">@color/primary_color</item>
-        <item name="colorOnPrimary">@color/white</item>
-        <item name="colorSurface">@color/white</item>
-        <item name="colorOnSurface">@color/text_primary</item>
-        <item name="android:windowBackground">@color/white</item>
+        <item name="colorPrimary">@color/vh_primary</item>
+        <item name="colorOnPrimary">@color/vh_btn_text</item>
+        <item name="colorSurface">@color/vh_surface_2</item>
+        <item name="colorOnSurface">@color/vh_text</item>
+        <item name="android:windowBackground">@color/vh_bg</item>
     </style>
 
     <!-- Base application theme. -->
-    <style name="Base.Theme.GlucoseTracker" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    <style name="Base.Theme.VitaHub" parent="Theme.Material3.Dark.NoActionBar">
     </style>
 </resources>
